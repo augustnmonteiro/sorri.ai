@@ -81,8 +81,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:opacity-80 ${
                 userPlan === 'pro'
                   ? 'bg-gradient-to-r from-primary to-secondary text-white'
-                  : userPlan === 'lite'
-                  ? 'bg-amber-100 text-amber-700'
                   : 'bg-gray-100 text-gray-600'
               }`}
             >

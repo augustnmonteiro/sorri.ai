@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface OnboardingData {
-  main_specialty: string | null;
+  main_specialty: string[] | string | null;
   focus_procedures: string | null;
   real_differentiator: string | null;
   how_to_be_remembered: string | null;
@@ -123,7 +123,7 @@ REGRAS DO JSON:
 - Valide que o JSON está sintaticamente correto antes de responder
 
 PERFIL DO DENTISTA
-- Especialidade principal: ${onboarding.main_specialty || "Odontologia geral"}
+- Especialidade principal: ${Array.isArray(onboarding.main_specialty) ? onboarding.main_specialty.join(" e ") : onboarding.main_specialty || "Odontologia geral"}
 - Procedimentos foco: ${onboarding.focus_procedures || "Diversos procedimentos"}
 - Diferencial real: ${onboarding.real_differentiator || "Atendimento de qualidade"}
 - Como quer ser lembrado: ${onboarding.how_to_be_remembered || "Como um profissional de excelência"}

@@ -603,6 +603,12 @@ img {
     align-items: start;
 }
 
+.pricing-grid.pricing-grid-two {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .pricing-card {
     position: relative;
     background: var(--white);
@@ -824,6 +830,11 @@ img {
         grid-template-columns: 1fr;
         max-width: 400px;
         margin: 0 auto;
+    }
+
+    .pricing-grid.pricing-grid-two {
+        grid-template-columns: 1fr;
+        max-width: 400px;
     }
 
     .pricing-card.popular {

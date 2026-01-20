@@ -9,7 +9,6 @@ import toast from 'react-hot-toast'
 
 const PLAN_PRICES = {
   free: { monthly: 0, yearly: 0 },
-  lite: { monthly: 97, yearly: 970 },
   pro: { monthly: 197, yearly: 1970 },
 } as const
 
@@ -95,7 +94,6 @@ export function Settings() {
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     currentPlan === 'pro' ? 'bg-primary-100 text-primary' :
-                    currentPlan === 'lite' ? 'bg-amber-100 text-amber-700' :
                     'bg-gray-100 text-gray-600'
                   }`}>
                     {currentPlan === 'free' ? 'Gratuito' : 'Ativo'}
@@ -170,64 +168,6 @@ export function Settings() {
                   {currentPlan !== 'free' && (
                     <Button variant="outline" className="w-full" onClick={() => handleUpgrade('free')}>
                       Fazer Downgrade
-                    </Button>
-                  )}
-                </div>
-
-                {/* Lite Plan */}
-                <div className={`bg-white rounded-2xl p-6 border-2 transition-all ${
-                  currentPlan === 'lite' ? 'border-primary' : 'border-gray-200'
-                }`}>
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-lg font-bold text-gray-900">Lite</h4>
-                        {currentPlan === 'lite' && (
-                          <span className="px-2 py-0.5 bg-primary-100 text-primary text-xs font-medium rounded-full">
-                            Atual
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">Para crescer</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-gray-900">R$ {PLAN_PRICES.lite.monthly}</p>
-                      <p className="text-sm text-gray-500">/mês</p>
-                    </div>
-                  </div>
-                  <ul className="space-y-2 mb-4">
-                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {PLAN_CONFIG.lite.videoEditsPerMonth} edições por mês
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Entrega em {PLAN_CONFIG.lite.deliveryText}
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Roteiros ilimitados
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Suporte prioritário
-                    </li>
-                  </ul>
-                  {currentPlan !== 'lite' && (
-                    <Button
-                      className="w-full"
-                      variant={currentPlan === 'free' ? 'primary' : 'outline'}
-                      onClick={() => handleUpgrade('lite')}
-                    >
-                      {currentPlan === 'free' ? 'Assinar Lite' : 'Fazer Downgrade'}
                     </Button>
                   )}
                 </div>

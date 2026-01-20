@@ -17,6 +17,7 @@ import { VideoUploadPage } from '@/pages/VideoUploadPage'
 import { RecordingGuidePage } from '@/pages/RecordingGuidePage'
 import { RecordingChecklistPage } from '@/pages/RecordingChecklistPage'
 import { Settings } from '@/pages/Settings'
+import { PrivacyPolicy } from '@/pages/PrivacyPolicy'
 import { LoadingScreen } from '@/components/ui'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -46,6 +47,7 @@ function AppRoutes() {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Landing />} />
+      <Route path="/privacidade" element={<PrivacyPolicy />} />
       <Route
         path="/login"
         element={

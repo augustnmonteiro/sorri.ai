@@ -100,15 +100,20 @@ export function AdminDashboard() {
     }
   }
 
-  const handleDownloadRaw = async (script: ScriptWithUser) => {
-    if (!script.raw_video_url) {
+  const getVideoUrls = (rawVideoUrl: string | undefined): string[] => {
+    if (!rawVideoUrl) return []
+    return rawVideoUrl.split(',').map(url => url.trim()).filter(Boolean)
+  }
+
+  const handleDownloadRaw = async (script: ScriptWithUser, videoUrl: string, index: number) => {
+    if (!videoUrl) {
       toast.error('Vídeo não disponível')
       return
     }
 
-    setDownloadingId(script.id)
+    setDownloadingId(`${script.id}-${index}`)
     try {
-      const url = new URL(script.raw_video_url)
+      const url = new URL(videoUrl)
       const pathParts = url.pathname.split('/storage/v1/object/public/raw-videos/')
       const filePath = pathParts[1] || ''
 
@@ -121,7 +126,8 @@ export function AdminDashboard() {
       const downloadUrl = URL.createObjectURL(data)
       const a = document.createElement('a')
       a.href = downloadUrl
-      a.download = `${script.title.replace(/\s+/g, '_')}_raw.mp4`
+      const extension = filePath.split('.').pop() || 'mp4'
+      a.download = `${script.title.replace(/\s+/g, '_')}_raw_${index + 1}.${extension}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -142,7 +148,7 @@ export function AdminDashboard() {
       return
     }
 
-    setDownloadingId(script.id)
+    setDownloadingId(`${script.id}-edited`)
     try {
       const url = new URL(script.edited_video_url)
       const pathParts = url.pathname.split('/storage/v1/object/public/edited-videos/')
@@ -157,7 +163,8 @@ export function AdminDashboard() {
       const downloadUrl = URL.createObjectURL(data)
       const a = document.createElement('a')
       a.href = downloadUrl
-      a.download = `${script.title.replace(/\s+/g, '_')}_edited.mp4`
+      const extension = filePath.split('.').pop() || 'mp4'
+      a.download = `${script.title.replace(/\s+/g, '_')}_edited.${extension}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -395,7 +402,6 @@ export function AdminDashboard() {
             {scripts.map((script) => {
               const urgency = getUrgencyInfo(script.expected_delivery_at)
               const isUploading = uploading?.scriptId === script.id
-              const isDownloading = downloadingId === script.id
               const userPlan = (script.profiles?.plan || 'free') as UserPlan
               const planConfig = PLAN_CONFIG[userPlan]
 
@@ -430,7 +436,6 @@ export function AdminDashboard() {
                           )}
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                             userPlan === 'pro' ? 'bg-primary-100 text-primary' :
-                            userPlan === 'lite' ? 'bg-amber-100 text-amber-700' :
                             'bg-gray-100 text-gray-600'
                           }`}>
                             {planConfig.name}
@@ -489,83 +494,84 @@ export function AdminDashboard() {
                       </div>
                     )}
 
+                    {/* Video Downloads */}
+                    {(() => {
+                      const videoUrls = getVideoUrls(script.raw_video_url)
+                      return videoUrls.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs text-gray-500 font-medium mb-2">
+                            Vídeos enviados ({videoUrls.length}):
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {videoUrls.map((videoUrl, index) => {
+                              const isDownloadingThis = downloadingId === `${script.id}-${index}`
+                              return (
+                                <Button
+                                  key={index}
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDownloadRaw(script, videoUrl, index)}
+                                  disabled={isDownloadingThis}
+                                  icon={
+                                    isDownloadingThis ? (
+                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                                    ) : (
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                      </svg>
+                                    )
+                                  }
+                                >
+                                  {isDownloadingThis ? 'Baixando...' : `Vídeo ${index + 1}`}
+                                </Button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })()}
+
                     {/* Actions */}
                     <div className="flex gap-3">
                       {activeTab === 'editing' ? (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDownloadRaw(script)}
-                            disabled={isDownloading || !script.raw_video_url}
-                            className="flex-1"
-                            icon={
-                              isDownloading ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                              ) : (
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                              )
-                            }
-                          >
-                            {isDownloading ? 'Baixando...' : 'Baixar Vídeo'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleUploadClick(script.id)}
-                            disabled={isUploading}
-                            className="flex-1"
-                            icon={
-                              isUploading ? (
-                                <div className="flex items-center gap-2">
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                  <span>{uploading?.progress}%</span>
-                                </div>
-                              ) : (
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                </svg>
-                              )
-                            }
-                          >
-                            {isUploading ? 'Enviando...' : 'Enviar Editado'}
-                          </Button>
-                        </>
+                        <Button
+                          size="sm"
+                          onClick={() => handleUploadClick(script.id)}
+                          disabled={isUploading}
+                          className="flex-1"
+                          icon={
+                            isUploading ? (
+                              <div className="flex items-center gap-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                <span>{uploading?.progress}%</span>
+                              </div>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                              </svg>
+                            )
+                          }
+                        >
+                          {isUploading ? 'Enviando...' : 'Enviar Editado'}
+                        </Button>
                       ) : (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDownloadRaw(script)}
-                            disabled={isDownloading || !script.raw_video_url}
-                            className="flex-1"
-                            icon={
+                        <Button
+                          size="sm"
+                          onClick={() => handleDownloadEdited(script)}
+                          disabled={!!downloadingId || !script.edited_video_url}
+                          className="flex-1"
+                          icon={
+                            downloadingId === `${script.id}-edited` ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : (
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                               </svg>
-                            }
-                          >
-                            Baixar Original
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleDownloadEdited(script)}
-                            disabled={isDownloading || !script.edited_video_url}
-                            className="flex-1"
-                            icon={
-                              isDownloading ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              ) : (
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                              )
-                            }
-                          >
-                            {isDownloading ? 'Baixando...' : 'Baixar Editado'}
-                          </Button>
-                        </>
+                            )
+                          }
+                        >
+                          {downloadingId === `${script.id}-edited` ? 'Baixando...' : 'Baixar Editado'}
+                        </Button>
                       )}
                     </div>
                   </div>

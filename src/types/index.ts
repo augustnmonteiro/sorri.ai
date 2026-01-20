@@ -1,5 +1,5 @@
 // Auth Types
-export type UserPlan = 'free' | 'lite' | 'pro'
+export type UserPlan = 'free' | 'pro'
 export type UserRole = 'user' | 'admin'
 
 export interface User {
@@ -26,7 +26,7 @@ export type BottleneckOption = 'attraction' | 'conversion' | 'attendance' | 'clo
 
 export interface OnboardingData {
   // 1) Perfil do dentista e posicionamento
-  main_specialty: string
+  main_specialty: string[]
   focus_procedures: string
   real_differentiator: string
   how_to_be_remembered: string
@@ -69,10 +69,6 @@ export interface OnboardingData {
   facebook_handle: string
   linkedin_handle: string
   whatsapp_number: string
-
-  // Extras
-  brand_color_primary: string
-  brand_color_secondary: string
 }
 
 // Script Types

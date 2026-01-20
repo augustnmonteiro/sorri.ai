@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface OnboardingData {
-  main_specialty: string | null;
+  main_specialty: string[] | string | null;
   focus_procedures: string | null;
   real_differentiator: string | null;
   how_to_be_remembered: string | null;
@@ -50,19 +50,64 @@ interface GeneratedSubjects {
   subjects: SubjectItem[];
 }
 
-function buildSystemPrompt(onboarding: OnboardingData, previousSubjects: string): string {
+function buildSystemPrompt(onboarding: OnboardingData, previousSubjects: string, ideaCount: number): string {
+  // Distribution based on idea count
+  const distributions = ideaCount === 30 ? {
+    byPillar: {
+      educacional: 6,
+      quebra_objecao: 6,
+      mito_verdade: 6,
+      autoridade: 6,
+      prova_social: 4,
+      conversao: 2
+    },
+    byFunnel: { topo: 12, meio: 12, fundo: 6 },
+    minFormats: {
+      pergunta_resposta: 6,
+      lista_3_pontos: 5,
+      historia_curta: 4,
+      analogia: 4,
+      erro_comum: 3
+    },
+    flagshipMin: 8,
+    bottleneckMin: 5,
+    objectionMin: 6,
+    mythMin: 2
+  } : {
+    byPillar: {
+      educacional: 2,
+      quebra_objecao: 2,
+      mito_verdade: 2,
+      autoridade: 2,
+      prova_social: 1,
+      conversao: 1
+    },
+    byFunnel: { topo: 4, meio: 4, fundo: 2 },
+    minFormats: {
+      pergunta_resposta: 2,
+      lista_3_pontos: 2,
+      historia_curta: 1,
+      analogia: 1,
+      erro_comum: 1
+    },
+    flagshipMin: 3,
+    bottleneckMin: 2,
+    objectionMin: 2,
+    mythMin: 1
+  };
+
   return `
 Você é um estrategista de conteúdo especializado em marketing digital para profissionais de odontologia no Brasil.
 
 ## SUA MISSÃO
-  Gerar 30 ideias estratégicas de assuntos / temas para vídeos curtos(Reels / TikTok / Shorts) que serão posteriormente transformados em roteiros completos por outro prompt.
+  Gerar ${ideaCount} ideias estratégicas de assuntos / temas para vídeos curtos(Reels / TikTok / Shorts) que serão posteriormente transformados em roteiros completos por outro prompt.
   IMPORTANTE: Você está gerando APENAS os assuntos / temas, NÃO os roteiros completos.
 
 ---
 
 ## PERFIL DO PROFISSIONAL
 
-  - ** Especialidade principal:** ${onboarding.main_specialty || "Odontologia geral"}
+  - ** Especialidade principal:** ${Array.isArray(onboarding.main_specialty) ? onboarding.main_specialty.join(" e ") : onboarding.main_specialty || "Odontologia geral"}
   - ** Procedimentos foco:** ${onboarding.focus_procedures || "Diversos procedimentos"}
   - ** Procedimento carro - chefe:** ${onboarding.flagship_procedure || "Especialidade principal"}
   - ** Procedimentos prioritários:** ${onboarding.priority_procedures || "Procedimentos de alta demanda"}
@@ -175,42 +220,42 @@ Ajuda a diferenciar de assuntos similares.
 
 ## DISTRIBUIÇÃO OBRIGATÓRIA
 
-### Por Pilar(total = 30):
-- educacional: 6 ideias
-- quebra_objecao: 6 ideias
-- mito_verdade: 6 ideias
-- autoridade: 6 ideias
-- prova_social: 4 ideias
-- conversao: 2 ideias
+### Por Pilar(total = ${ideaCount}):
+- educacional: ${distributions.byPillar.educacional} ideias
+- quebra_objecao: ${distributions.byPillar.quebra_objecao} ideias
+- mito_verdade: ${distributions.byPillar.mito_verdade} ideias
+- autoridade: ${distributions.byPillar.autoridade} ideias
+- prova_social: ${distributions.byPillar.prova_social} ideias
+- conversao: ${distributions.byPillar.conversao} ideias
 
 ### Por Etapa do Funil:
-- topo: 12 ideias
-- meio: 12 ideias
-- fundo: 6 ideias
+- topo: ${distributions.byFunnel.topo} ideias
+- meio: ${distributions.byFunnel.meio} ideias
+- fundo: ${distributions.byFunnel.fundo} ideias
 
 ### Variedade de Formatos(mínimo obrigatório):
-- pergunta_resposta: mínimo 6
-- lista_3_pontos: mínimo 5
-- historia_curta: mínimo 4
-- analogia: mínimo 4
-- erro_comum: mínimo 3
+- pergunta_resposta: mínimo ${distributions.minFormats.pergunta_resposta}
+- lista_3_pontos: mínimo ${distributions.minFormats.lista_3_pontos}
+- historia_curta: mínimo ${distributions.minFormats.historia_curta}
+- analogia: mínimo ${distributions.minFormats.analogia}
+- erro_comum: mínimo ${distributions.minFormats.erro_comum}
 - Outros formatos: distribuir os restantes
 
 ### Variedade de Hook Styles:
-- Usar pelo menos 5 estilos diferentes
-- Não usar o mesmo estilo mais de 7 vezes
+- Usar pelo menos ${ideaCount === 30 ? 5 : 3} estilos diferentes
+- Não usar o mesmo estilo mais de ${ideaCount === 30 ? 7 : 3} vezes
 
 ---
 
 ## DIRETRIZES DE QUALIDADE
 
 ### ✅ FAZER:
-1. Priorizar o PROCEDIMENTO CARRO - CHEFE(mínimo 8 ideias relacionadas)
+1. Priorizar o PROCEDIMENTO CARRO - CHEFE(mínimo ${distributions.flagshipMin} ideias relacionadas)
 2. Abordar as DORES do paciente de diferentes ângulos
 3. Responder as PERGUNTAS FREQUENTES informadas
-4. Atacar diretamente o GARGALO DE NEGÓCIO(mínimo 5 ideias)
-5. Quebrar as OBJEÇÕES principais(mínimo 6 ideias)
-6. Desconstruir o MITO informado(mínimo 2 ideias)
+4. Atacar diretamente o GARGALO DE NEGÓCIO(mínimo ${distributions.bottleneckMin} ideias)
+5. Quebrar as OBJEÇÕES principais(mínimo ${distributions.objectionMin} ideias)
+6. Desconstruir o MITO informado(mínimo ${distributions.mythMin} ideias)
 7. Usar linguagem acessível, sem jargões técnicos excessivos
 8. Criar assuntos que funcionem para vídeos de 20 - 60 segundos
 9. Pensar em assuntos "graváveis hoje"(sem depender de recursos especiais)
@@ -249,17 +294,17 @@ Retorne EXCLUSIVAMENTE um JSON válido, sem NENHUM texto antes ou depois:
   },
   "distribution_summary": {
     "by_pillar": {
-      "educacional": 6,
-      "quebra_objecao": 6,
-      "mito_verdade": 6,
-      "autoridade": 6,
-      "prova_social": 4,
-      "conversao": 2
+      "educacional": ${distributions.byPillar.educacional},
+      "quebra_objecao": ${distributions.byPillar.quebra_objecao},
+      "mito_verdade": ${distributions.byPillar.mito_verdade},
+      "autoridade": ${distributions.byPillar.autoridade},
+      "prova_social": ${distributions.byPillar.prova_social},
+      "conversao": ${distributions.byPillar.conversao}
     },
     "by_funnel": {
-      "topo": 12,
-      "meio": 12,
-      "fundo": 6
+      "topo": ${distributions.byFunnel.topo},
+      "meio": ${distributions.byFunnel.meio},
+      "fundo": ${distributions.byFunnel.fundo}
     }
   },
   "subjects": [
@@ -292,8 +337,8 @@ Retorne EXCLUSIVAMENTE um JSON válido, sem NENHUM texto antes ou depois:
 
 Antes de retornar o JSON, verifique:
 
-[] São exatamente 30 itens no array "subjects"
-[] IDs vão de 1 a 30 sem repetição
+[] São exatamente ${ideaCount} itens no array "subjects"
+[] IDs vão de 1 a ${ideaCount} sem repetição
 [] Distribuição por pilar está correta
 [] Distribuição por funil está correta
 [] Variedade mínima de formatos foi respeitada
@@ -303,7 +348,7 @@ Antes de retornar o JSON, verifique:
 [] JSON está válido e parseável
 [] Nenhum assunto do histórico foi repetido
 
-GERE AGORA OS 30 ASSUNTOS.
+GERE AGORA OS ${ideaCount} ASSUNTOS.
 ---
 
 # Exemplo de Resposta(3 primeiros itens)
@@ -419,7 +464,7 @@ interface GeneratedSubjects {
     by_pillar: Record<string, number>;
     by_funnel: Record<string, number>;
   };
-  subjects: SubjectItem[]; // exactly 30 items
+  subjects: SubjectItem[]; // exactly ${ideaCount} items
 }
 `;
 }
@@ -457,6 +502,21 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Fetch user's profile to get their plan
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      console.error("Error fetching profile:", profileError);
+    }
+
+    // Determine idea count based on plan (free: 10, pro: 30)
+    const userPlan = profile?.plan || "free";
+    const ideaCount = userPlan === "free" ? 10 : 30;
+
     // Fetch user's onboarding data
     const { data: onboarding, error: onboardingError } = await supabase
       .from("user_onboarding")
@@ -488,7 +548,7 @@ Deno.serve(async (req) => {
       ? existingScripts.map((s: { title: string }) => s.title).join(", ")
       : null;
 
-    const systemPrompt = buildSystemPrompt(onboarding as OnboardingData, previousSubjects);
+    const systemPrompt = buildSystemPrompt(onboarding as OnboardingData, previousSubjects, ideaCount);
 
     const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -542,7 +602,7 @@ Deno.serve(async (req) => {
     }
 
     // Create script entries for each subject (without content)
-    const scriptsToInsert = generatedData.subjects.slice(0, 30).map((item, index) => ({
+    const scriptsToInsert = generatedData.subjects.slice(0, ideaCount).map((item, index) => ({
       user_id: user.id,
       title: item.subject,
       topic: item.subject,
@@ -559,7 +619,7 @@ Deno.serve(async (req) => {
       hook_style: item.hook_style,
       content_angle: item.content_angle,
       generation_params: {
-        specialty: onboarding.main_specialty,
+        specialty: Array.isArray(onboarding.main_specialty) ? onboarding.main_specialty.join(" e ") : onboarding.main_specialty,
         metadata: generatedData.metadata,
       },
     }));
@@ -580,7 +640,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         count: scriptsToInsert.length,
-        subjects: generatedData.subjects.slice(0, 30),
+        subjects: generatedData.subjects.slice(0, ideaCount),
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

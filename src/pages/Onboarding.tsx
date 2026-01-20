@@ -14,7 +14,6 @@ import {
   Bottleneck,
   ProofAndAuthority,
   FlagshipProcedure,
-  BrandColors,
   Complete,
 } from '@/components/onboarding/steps'
 
@@ -43,8 +42,7 @@ function OnboardingSteps() {
     11: <Bottleneck />,
     12: <ProofAndAuthority />,
     13: <FlagshipProcedure />,
-    14: <BrandColors />,
-    15: <Complete />,
+    14: <Complete />,
   }
 
   return steps[currentStep] || <Welcome />

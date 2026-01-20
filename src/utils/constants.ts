@@ -59,20 +59,16 @@ export const SCRIPT_STATUS_CONFIG = {
 export const PLAN_CONFIG = {
   free: {
     name: 'Free',
-    videoEditsPerMonth: 2,
+    videoEditsPerMonth: 1,
     deliveryHours: 168, // 7 days
     deliveryText: '7 dias',
-  },
-  lite: {
-    name: 'Lite',
-    videoEditsPerMonth: 5,
-    deliveryHours: 72, // 72 hours
-    deliveryText: '72 horas',
+    ideasPerGeneration: 10,
   },
   pro: {
     name: 'Pro',
-    videoEditsPerMonth: 15,
-    deliveryHours: 48, // 48 hours
-    deliveryText: '48 horas',
+    videoEditsPerMonth: 4,
+    deliveryHours: 72, // 72 hours
+    deliveryText: '72 horas',
+    ideasPerGeneration: 30,
   },
 } as const

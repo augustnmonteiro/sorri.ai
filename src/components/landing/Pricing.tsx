@@ -6,45 +6,32 @@ import { Button } from '@/components/ui'
 
 const plans = [
   {
-    name: 'Starter',
+    name: 'Free',
     description: 'Para quem está começando',
     price: 0,
     features: [
-      '5 roteiros por mês',
+      '10 ideias de roteiros por mês',
+      '1 vídeo editado por mês',
+      'Entrega em até 7 dias',
       'Acompanhamento de vídeos',
-      'Suporte por email',
     ],
     cta: 'Começar Grátis',
     variant: 'outline' as const,
     popular: false,
   },
   {
-    name: 'Profissional',
-    description: 'Para dentistas em crescimento',
+    name: 'Pro',
+    description: 'Para quem quer crescer de verdade',
     price: 197,
     features: [
-      'Roteiros ilimitados',
-      '8 vídeos editados/mês',
-      'Entrega em 48h',
+      '30 ideias de roteiros por mês',
+      '4 vídeos editados por mês',
+      'Entrega em até 72 horas',
       'Suporte prioritário',
     ],
     cta: 'Assinar Agora',
     variant: 'primary' as const,
     popular: true,
-  },
-  {
-    name: 'Clínica',
-    description: 'Para múltiplos profissionais',
-    price: 397,
-    features: [
-      'Tudo do Profissional',
-      '20 vídeos editados/mês',
-      'Até 5 usuários',
-      'Gerente de conta dedicado',
-    ],
-    cta: 'Falar com Vendas',
-    variant: 'outline' as const,
-    popular: false,
   },
 ]
 
@@ -115,7 +102,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-start">
+        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto items-start">
           {plans.map((plan, index) => (
             <PricingCard key={plan.name} plan={plan} index={index} />
           ))}

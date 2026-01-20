@@ -23,11 +23,10 @@ type OnboardingAction =
   | { type: 'LOAD_DATA'; data: Partial<OnboardingData>; step: number }
   | { type: 'RESET' }
 
-const TOTAL_STEPS = 15
+const TOTAL_STEPS = 14
 
 const initialData: Partial<OnboardingData> = {
-  brand_color_primary: '#0066E0',
-  brand_color_secondary: '#00C4CC',
+  main_specialty: [],
   tone_of_voice: [],
   proof_types: [],
 }
@@ -121,7 +120,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         if (existingData) {
           // Map database fields to state
           const loadedData: Partial<OnboardingData> = {
-            main_specialty: existingData.main_specialty,
+            main_specialty: Array.isArray(existingData.main_specialty)
+              ? existingData.main_specialty
+              : existingData.main_specialty
+                ? [existingData.main_specialty]
+                : [],
             focus_procedures: existingData.focus_procedures,
             real_differentiator: existingData.real_differentiator,
             how_to_be_remembered: existingData.how_to_be_remembered,
@@ -152,8 +155,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             facebook_handle: existingData.facebook_handle,
             linkedin_handle: existingData.linkedin_handle,
             whatsapp_number: existingData.whatsapp_number,
-            brand_color_primary: existingData.brand_color_primary || '#0066E0',
-            brand_color_secondary: existingData.brand_color_secondary || '#00C4CC',
           }
 
           dispatch({
@@ -212,8 +213,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       facebook_handle: state.data.facebook_handle,
       linkedin_handle: state.data.linkedin_handle,
       whatsapp_number: state.data.whatsapp_number,
-      brand_color_primary: state.data.brand_color_primary,
-      brand_color_secondary: state.data.brand_color_secondary,
     }
 
     try {
@@ -267,7 +266,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     switch (currentStep) {
       case 1: return true // Welcome
       case 2: return true // SocialAccounts (all optional)
-      case 3: return !!data.main_specialty // MainSpecialty
+      case 3: return (data.main_specialty?.length ?? 0) >= 1 // MainSpecialty (1-2 selections)
       case 4: return !!data.focus_procedures // FocusProcedures
       case 5: return !!data.real_differentiator || !!data.how_to_be_remembered // Differentiator
       case 6: return (data.tone_of_voice?.length ?? 0) >= 2 // ToneSelection (2-3)
@@ -278,8 +277,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       case 11: return !!data.main_bottleneck // Bottleneck
       case 12: return true // ProofAndAuthority (optional)
       case 13: return true // FlagshipProcedure (optional)
-      case 14: return true // BrandColors have defaults
-      case 15: return true // Complete
+      case 14: return true // Complete
       default: return false
     }
   })()

@@ -157,10 +157,8 @@ export function Signup() {
           </p>
 
           <p className="mt-4 text-center text-xs text-gray-400">
-            Ao criar uma conta, você concorda com nossos{' '}
-            <a href="#" className="text-primary hover:underline">Termos de Uso</a>{' '}
-            e{' '}
-            <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+            Ao criar uma conta, voce concorda com nossa{' '}
+            <Link to="/privacidade" className="text-primary hover:underline">Politica de Privacidade</Link>
           </p>
         </motion.div>
       </div>

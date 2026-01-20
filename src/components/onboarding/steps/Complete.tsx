@@ -62,8 +62,6 @@ export function Complete() {
         facebook_handle: data.facebook_handle,
         linkedin_handle: data.linkedin_handle,
         whatsapp_number: data.whatsapp_number,
-        brand_color_primary: data.brand_color_primary,
-        brand_color_secondary: data.brand_color_secondary,
       }
 
       // Try update first, then insert if no rows affected

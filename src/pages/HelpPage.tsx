@@ -14,7 +14,7 @@ export function HelpPage() {
     },
     {
       question: 'Quanto tempo leva para receber o vídeo editado?',
-      answer: 'O prazo de entrega depende do seu plano: Free (72h), Lite (48h) e Pro (24h). Você pode acompanhar o status na aba "Em Edição".',
+      answer: 'O prazo de entrega depende do seu plano: Free (até 7 dias) e Pro (até 72 horas). Você pode acompanhar o status na aba "Em Edição".',
     },
     {
       question: 'Como faço upgrade do meu plano?',
