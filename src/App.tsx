@@ -18,6 +18,7 @@ import { RecordingGuidePage } from '@/pages/RecordingGuidePage'
 import { RecordingChecklistPage } from '@/pages/RecordingChecklistPage'
 import { Settings } from '@/pages/Settings'
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy'
+import { PaymentSuccess } from '@/pages/PaymentSuccess'
 import { LoadingScreen } from '@/components/ui'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -81,6 +82,7 @@ function AppRoutes() {
           <Route path="/checklist-gravacao" element={<RecordingChecklistPage />} />
           <Route path="/checklist-gravacao/:scriptId" element={<RecordingChecklistPage />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
         </Route>
 
         {/* Admin Routes - Require Admin role */}

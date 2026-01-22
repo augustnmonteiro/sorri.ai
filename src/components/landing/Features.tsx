@@ -53,7 +53,7 @@ const features = [
       </svg>
     ),
     title: 'Entrega Rápida',
-    description: 'Receba seus vídeos editados em até 48 horas. Mantenha sua consistência nas redes sem esperar semanas pela edição.',
+    description: 'Receba seus vídeos editados em até 72 horas. Mantenha sua consistência nas redes sem esperar semanas pela edição.',
   },
   {
     icon: (

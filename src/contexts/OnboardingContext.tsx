@@ -273,7 +273,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       case 7: return !!data.persona // Persona
       case 8: return !!data.ideal_patient // IdealPatient
       case 9: return true // PatientPains (optional)
-      case 10: return !!data.priority_procedures // PriorityProcedures
+      case 10: return !!data.current_ticket && !!data.target_ticket // PriorityProcedures (ticket values)
       case 11: return !!data.main_bottleneck // Bottleneck
       case 12: return true // ProofAndAuthority (optional)
       case 13: return true // FlagshipProcedure (optional)

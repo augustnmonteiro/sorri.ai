@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
+const noOpLock = async (_: string, __: number, fn: () => Promise<any>) => { return await fn() }
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
@@ -11,19 +12,14 @@ export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key',
   {
-    realtime: {
-
-    },
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: false,
+      detectSessionInUrl: true,
+      storage: window.localStorage,
       storageKey: 'supabase.auth.token',
-      storage: localStorage,
-      lock: (_name, _acquireTimeout, fn) => {
-        return fn()
-      },
-    }
+      lock: noOpLock
+    },
   }
 )
 

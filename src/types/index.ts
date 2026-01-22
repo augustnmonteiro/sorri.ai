@@ -2,6 +2,8 @@
 export type UserPlan = 'free' | 'pro'
 export type UserRole = 'user' | 'admin'
 
+export type SubscriptionStatus = 'inactive' | 'active' | 'canceled' | 'past_due'
+
 export interface User {
   id: string
   email: string
@@ -13,6 +15,9 @@ export interface User {
   role: UserRole
   video_edits_this_month: number
   video_edits_reset_at?: string
+  stripe_customer_id?: string
+  stripe_subscription_id?: string
+  subscription_status?: SubscriptionStatus
   created_at: string
   updated_at: string
 }

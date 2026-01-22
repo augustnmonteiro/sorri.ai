@@ -28,33 +28,6 @@ export function PriorityProcedures() {
       </div>
 
       <div className="space-y-6 max-w-xl mx-auto">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Quais procedimentos você quer lotar agenda?
-          </label>
-          <textarea
-            placeholder="Ex.: lentes de contato, implantes, harmonização..."
-            value={data.priority_procedures || ''}
-            onChange={(e) => updateData({ priority_procedures: e.target.value })}
-            className="w-full p-4 rounded-2xl border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary-100 outline-none resize-none h-24 text-base"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Procedimentos que faz mas NÃO quer divulgar
-          </label>
-          <Input
-            inputSize="lg"
-            placeholder="Ex.: extração simples, limpeza..."
-            value={data.procedures_to_hide || ''}
-            onChange={(e) => updateData({ procedures_to_hide: e.target.value })}
-          />
-          <p className="mt-1 text-xs text-gray-400">
-            Opcional - serviços que prefere não destacar
-          </p>
-        </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

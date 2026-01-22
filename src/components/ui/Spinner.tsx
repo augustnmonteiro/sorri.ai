@@ -37,7 +37,7 @@ export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
 export function LoadingScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
-      <div className="text-center">
+      <div className="flex flex-col items-center">
         <Spinner size="lg" />
         <p className="mt-4 text-gray-600 font-medium">Carregando...</p>
       </div>

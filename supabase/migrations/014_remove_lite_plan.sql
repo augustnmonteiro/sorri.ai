@@ -14,4 +14,4 @@ ALTER TABLE public.profiles
 ADD CONSTRAINT profiles_plan_check CHECK (plan IN ('free', 'pro'));
 
 -- Update the column comment
-COMMENT ON COLUMN public.profiles.plan IS 'User subscription plan: free (1 video/month, 7 days delivery) or pro (4 videos/month, 48h delivery)';
+COMMENT ON COLUMN public.profiles.plan IS 'User subscription plan: free (1 video/month, 7 days delivery) or pro (4 videos/month, 72h delivery)';

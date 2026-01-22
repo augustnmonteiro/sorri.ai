@@ -28,7 +28,7 @@ const steps = [
   {
     number: 3,
     title: 'Receba Editado',
-    description: 'Em até 48h você recebe seu vídeo editado profissionalmente, pronto para publicar nas redes.',
+    description: 'Em até 72h você recebe seu vídeo editado profissionalmente, pronto para publicar nas redes.',
     icon: (
       <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <polygon points="23 7 16 12 23 17 23 7" />

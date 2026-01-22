@@ -4,30 +4,113 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui'
 import { useAuth } from '@/contexts/AuthContext'
 import { PLAN_CONFIG } from '@/utils/constants'
+import { supabase } from '@/lib/supabase'
 import type { UserPlan } from '@/types'
 import toast from 'react-hot-toast'
 
 const PLAN_PRICES = {
-  free: { monthly: 0, yearly: 0 },
-  pro: { monthly: 197, yearly: 1970 },
+  free: { monthly: 0 },
+  pro: { monthly: 197 },
 } as const
 
 export function Settings() {
   const navigate = useNavigate()
   const { profile, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState<'account' | 'plan'>('plan')
+  const [isLoading, setIsLoading] = useState(false)
 
   const currentPlan = (profile?.plan || 'free') as UserPlan
   const planConfig = PLAN_CONFIG[currentPlan]
   const editsUsed = profile?.video_edits_this_month || 0
 
-  const handleUpgrade = (plan: UserPlan) => {
-    if (plan === currentPlan) {
-      toast.error('Você já está neste plano')
+  const handleUpgrade = async () => {
+    if (currentPlan === 'pro') {
+      toast.error('Você já é assinante Pro')
       return
     }
-    // TODO: Integrate with payment provider (Stripe)
-    toast.success(`Redirecionando para pagamento do plano ${PLAN_CONFIG[plan].name}...`)
+
+    setIsLoading(true)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error('Você precisa estar logado')
+        return
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            successUrl: `${window.location.origin}/payment/success`,
+            cancelUrl: `${window.location.origin}/settings`,
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar sessão de pagamento')
+      }
+
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      toast.error(error instanceof Error ? error.message : 'Erro ao processar pagamento')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    setIsLoading(true)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error('Você precisa estar logado')
+        return
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            returnUrl: `${window.location.origin}/settings`,
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao abrir portal de assinatura')
+      }
+
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Error creating portal session:', error)
+      toast.error(error instanceof Error ? error.message : 'Erro ao abrir portal')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -100,7 +183,7 @@ export function Settings() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-sm text-gray-500">Edições este mês</p>
                     <p className="text-xl font-bold text-gray-900">
@@ -109,7 +192,7 @@ export function Settings() {
                     <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary rounded-full transition-all"
-                        style={{ width: `${(editsUsed / planConfig.videoEditsPerMonth) * 100}%` }}
+                        style={{ width: `${Math.min((editsUsed / planConfig.videoEditsPerMonth) * 100, 100)}%` }}
                       />
                     </div>
                   </div>
@@ -118,6 +201,18 @@ export function Settings() {
                     <p className="text-xl font-bold text-gray-900">{planConfig.deliveryText}</p>
                   </div>
                 </div>
+
+                {/* Manage Subscription Button for Pro users */}
+                {currentPlan === 'pro' && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleManageSubscription}
+                    isLoading={isLoading}
+                  >
+                    Gerenciar Assinatura
+                  </Button>
+                )}
               </div>
 
               {/* Plan Options */}
@@ -150,7 +245,7 @@ export function Settings() {
                       <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      {PLAN_CONFIG.free.videoEditsPerMonth} edições por mês
+                      {PLAN_CONFIG.free.videoEditsPerMonth} edição por mês
                     </li>
                     <li className="flex items-center gap-2 text-sm text-gray-600">
                       <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,14 +257,9 @@ export function Settings() {
                       <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Roteiros ilimitados
+                      {PLAN_CONFIG.free.ideasPerGeneration} ideias de roteiros
                     </li>
                   </ul>
-                  {currentPlan !== 'free' && (
-                    <Button variant="outline" className="w-full" onClick={() => handleUpgrade('free')}>
-                      Fazer Downgrade
-                    </Button>
-                  )}
                 </div>
 
                 {/* Pro Plan */}
@@ -213,23 +303,21 @@ export function Settings() {
                       <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Roteiros ilimitados
+                      {PLAN_CONFIG.pro.ideasPerGeneration} ideias de roteiros
                     </li>
                     <li className="flex items-center gap-2 text-sm text-gray-600">
                       <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Suporte prioritário 24/7
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Revisões ilimitadas
+                      Suporte prioritário
                     </li>
                   </ul>
                   {currentPlan !== 'pro' && (
-                    <Button className="w-full" onClick={() => handleUpgrade('pro')}>
+                    <Button
+                      className="w-full"
+                      onClick={handleUpgrade}
+                      isLoading={isLoading}
+                    >
                       Assinar Pro
                     </Button>
                   )}
