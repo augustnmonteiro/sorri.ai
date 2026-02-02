@@ -13,6 +13,9 @@ interface UserProfile {
   role: UserRole
   video_edits_this_month: number
   video_edits_reset_at?: string
+  ai_profile_photo_url?: string
+  ai_profile_photo_generated_at?: string
+  ai_profile_photo_generations_count: number
 }
 
 interface AuthContextType {

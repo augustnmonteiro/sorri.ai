@@ -63,6 +63,8 @@ export const PLAN_CONFIG = {
     deliveryHours: 168, // 7 days
     deliveryText: '7 dias',
     ideasPerGeneration: 10,
+    profilePhotoLimit: 1,
+    profilePhotoLimitType: 'lifetime' as const,
   },
   pro: {
     name: 'Pro',
@@ -70,5 +72,7 @@ export const PLAN_CONFIG = {
     deliveryHours: 72, // 72 hours
     deliveryText: '72 horas',
     ideasPerGeneration: 30,
+    profilePhotoLimit: 1,
+    profilePhotoLimitType: 'monthly' as const,
   },
 } as const

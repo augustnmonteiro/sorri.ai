@@ -18,6 +18,9 @@ export interface User {
   stripe_customer_id?: string
   stripe_subscription_id?: string
   subscription_status?: SubscriptionStatus
+  ai_profile_photo_url?: string
+  ai_profile_photo_generated_at?: string
+  ai_profile_photo_generations_count: number
   created_at: string
   updated_at: string
 }

@@ -17,6 +17,7 @@ import { VideoUploadPage } from '@/pages/VideoUploadPage'
 import { RecordingGuidePage } from '@/pages/RecordingGuidePage'
 import { RecordingChecklistPage } from '@/pages/RecordingChecklistPage'
 import { Settings } from '@/pages/Settings'
+import { PerfilPage } from '@/pages/PerfilPage'
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy'
 import { PaymentSuccess } from '@/pages/PaymentSuccess'
 import { LoadingScreen } from '@/components/ui'
@@ -75,6 +76,7 @@ function AppRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/trafego" element={<TrafegoPage />} />
           <Route path="/dashboard/ajuda" element={<HelpPage />} />
+          <Route path="/dashboard/perfil" element={<PerfilPage />} />
           <Route path="/dashboard/:category" element={<Dashboard />} />
           <Route path="/script/:id" element={<ScriptPage />} />
           <Route path="/script/:id/upload" element={<VideoUploadPage />} />

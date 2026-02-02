@@ -4,6 +4,13 @@ import { PLAN_CONFIG } from '@/utils/constants'
 import logo from '@/assets/images/logo.png'
 import type { UserPlan } from '@/types'
 
+function profilePhotoUrl(path: string | undefined | null): string | null {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  const base = import.meta.env.VITE_SUPABASE_URL
+  return `${base}/storage/v1/object/public/profile-photos/${path}`
+}
+
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
@@ -47,15 +54,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </svg>
       ),
     },
+    {
+      key: 'perfil',
+      label: 'Perfil',
+      path: '/dashboard/perfil',
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+    },
   ]
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
-      // Roteiros tab is active for /dashboard and /dashboard/:category (but not trafego/ajuda)
+      // Roteiros tab is active for /dashboard and /dashboard/:category (but not trafego/ajuda/perfil)
       return location.pathname === '/dashboard' ||
         (location.pathname.startsWith('/dashboard/') &&
          !location.pathname.includes('trafego') &&
-         !location.pathname.includes('ajuda'))
+         !location.pathname.includes('ajuda') &&
+         !location.pathname.includes('perfil'))
     }
     return location.pathname === path
   }
@@ -88,8 +106,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
 
             <div className="relative group">
-              <button className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold flex items-center justify-center">
-                {profile?.full_name?.charAt(0) || 'U'}
+              <button className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold flex items-center justify-center overflow-hidden">
+                {profilePhotoUrl(profile?.ai_profile_photo_url) ? (
+                  <img
+                    src={profilePhotoUrl(profile?.ai_profile_photo_url)!}
+                    alt={profile?.full_name || 'Perfil'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  profile?.full_name?.charAt(0) || 'U'
+                )}
               </button>
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="px-4 py-2 border-b border-gray-100">

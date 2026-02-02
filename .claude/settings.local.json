@@ -6,7 +6,10 @@
       "Bash(npx supabase:*)",
       "Bash(PGPASSWORD=postgres psql:*)",
       "Bash(curl:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(supabase --version:*)",
+      "Bash(npx vite:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

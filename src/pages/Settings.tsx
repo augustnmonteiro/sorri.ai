@@ -32,32 +32,15 @@ export function Settings() {
     setIsLoading(true)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          successUrl: `${window.location.origin}/payment/success`,
+          cancelUrl: `${window.location.origin}/settings`,
+        },
+      })
 
-      if (!session) {
-        toast.error('Você precisa estar logado')
-        return
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            successUrl: `${window.location.origin}/payment/success`,
-            cancelUrl: `${window.location.origin}/settings`,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao criar sessão de pagamento')
+      if (error) {
+        throw new Error(error.message || 'Erro ao criar sessão de pagamento')
       }
 
       if (data.url) {
@@ -75,31 +58,14 @@ export function Settings() {
     setIsLoading(true)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: {
+          returnUrl: `${window.location.origin}/settings`,
+        },
+      })
 
-      if (!session) {
-        toast.error('Você precisa estar logado')
-        return
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            returnUrl: `${window.location.origin}/settings`,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao abrir portal de assinatura')
+      if (error) {
+        throw new Error(error.message || 'Erro ao abrir portal de assinatura')
       }
 
       if (data.url) {
