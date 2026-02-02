@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
 
     // Build the OpenAI image edit request
     const openaiFormData = new FormData();
-    openaiFormData.append("model", "gpt-image-1");
+    openaiFormData.append("model", "gpt-image-1.5");
     openaiFormData.append(
       "prompt",
       `Edite essa imagem. Preciso de uma foto de perfil profissional, em alta resolução, mantendo a estrutura facial exata, identidade e características principais da pessoa na imagem de entrada. O sujeito é enquadrado do peito pra cima, com bastante espaço acima da cabeça e espaço negativo, garantindo que o topo da cabeça não seja cortado. A pessoa olha diretamente pra câmera com uma expressão confiante e autoritária, e o corpo do sujeito está posicionado em um ângulo de 3/4 em relação à câmera. O fundo é um estúdio neutro sólido “#141414”. Filmado de um ângulo alto com iluminação de estúdio suave, brilhante e arejada, iluminando suavemente o rosto e criando um leve brilho nos olhos, transmitindo uma sensação de autoridade e liderança. Capturado em uma lente 85mm f/1.8 com pouca profundidade de campo, foco requintado nos olhos e bokeh bonito e suave. Observe os detalhes nítidos na textura do tecido do traje, fios de cabelo individuais e textura natural e realista da pele, sem aparência artificial. A atmosfera exala confiança, profissionalismo e presença. Classificação de cores cinematográfica limpa e brilhante com calor sutil e tons equilibrados, garantindo uma sensação polida e contemporânea. Usar looks terno de juíz.`
